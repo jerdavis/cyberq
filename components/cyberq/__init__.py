@@ -25,7 +25,7 @@ def to_code(config):
 
 
 # Sensor platform
-SENSOR_SCHEMA = cv.Schema({
+SENSOR_PLATFORM_SCHEMA = sensor.SENSOR_PLATFORM_SCHEMA.extend({
     cv.GenerateID(CONF_CYBERQ_ID): cv.use_id(CyberQComponent),
     cv.Optional("pit1_temperature"): sensor.sensor_schema(
         unit_of_measurement="°F",
@@ -51,7 +51,6 @@ SENSOR_SCHEMA = cv.Schema({
     ),
 })
 
-@cv.platform_schema("cyberq", sensor.SENSOR_PLATFORM_SCHEMA.extend(SENSOR_SCHEMA))
 def sensor_to_code(config):
     parent = yield cg.get_variable(config[CONF_CYBERQ_ID])
     
@@ -85,7 +84,7 @@ def sensor_to_code(config):
 
 
 # Number platform
-NUMBER_SCHEMA = cv.Schema({
+NUMBER_PLATFORM_SCHEMA = number.NUMBER_PLATFORM_SCHEMA.extend({
     cv.GenerateID(CONF_CYBERQ_ID): cv.use_id(CyberQComponent),
     cv.Optional("pit1_setpoint"): number.number_schema(
         unit_of_measurement="°F",
@@ -101,7 +100,6 @@ NUMBER_SCHEMA = cv.Schema({
     ),
 })
 
-@cv.platform_schema("cyberq", number.NUMBER_PLATFORM_SCHEMA.extend(NUMBER_SCHEMA))
 def number_to_code(config):
     parent = yield cg.get_variable(config[CONF_CYBERQ_ID])
     
