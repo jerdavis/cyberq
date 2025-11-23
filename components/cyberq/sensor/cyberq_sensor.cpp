@@ -1,9 +1,10 @@
 #include "cyberq_sensor.h"
+#include "../cyberq.h"
 
 namespace esphome {
 namespace cyberq {
 
-static const char *TAG = "cyberq.sensor";
+static const char *TAG_SENSOR = "cyberq.sensor";
 
 void CyberQSensor::setup() {
   // Setup if needed
@@ -36,7 +37,7 @@ void CyberQSensor::update() {
 
 void CyberQSensor::dump_config() {
   LOG_SENSOR("", "CyberQ Sensor", this);
-  ESP_LOGCONFIG(TAG, "  Type: %s", this->sensor_type_.c_str());
+  ESP_LOGCONFIG(TAG_SENSOR, "  Type: %s", this->sensor_type_.c_str());
 }
 
 }  // namespace cyberq

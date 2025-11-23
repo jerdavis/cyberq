@@ -2,12 +2,15 @@
 
 #include "esphome.h"
 #include "esphome/components/sensor/sensor.h"
-#include "../cyberq.h"
 
 namespace esphome {
 namespace cyberq {
 
+// Forward declaration
+class CyberQComponent;
+
 class CyberQSensor : public sensor::Sensor, public PollingComponent {
+
  public:
   void set_cyberq_parent(CyberQComponent *parent) { this->parent_ = parent; }
   void set_sensor_type(const std::string &type) { this->sensor_type_ = type; }

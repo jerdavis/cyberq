@@ -1,9 +1,10 @@
 #include "cyberq_number.h"
+#include "../cyberq.h"
 
 namespace esphome {
 namespace cyberq {
 
-static const char *TAG = "cyberq.number";
+static const char *TAG_NUMBER = "cyberq.number";
 
 void CyberQNumber::setup() {
   // Setup if needed
@@ -29,7 +30,7 @@ void CyberQNumber::control(float value) {
 
 void CyberQNumber::dump_config() {
   LOG_NUMBER("", "CyberQ Number", this);
-  ESP_LOGCONFIG(TAG, "  Type: %s", this->number_type_.c_str());
+  ESP_LOGCONFIG(TAG_NUMBER, "  Type: %s", this->number_type_.c_str());
 }
 
 }  // namespace cyberq
