@@ -1,0 +1,150 @@
+#!/usr/local/bin/python
+
+import serial
+import time
+
+ser = serial.Serial()
+ser.baudrate = 9600
+ser.writeTimeout = 1000
+#ser.interCharTimeout = 5 
+ser.timeout  = 1000
+
+# Raspberry Pi
+# ser.port = "/dev/ttyACM0"
+# Macbook Air
+ser.port = "/dev/tty.usbmodemfa131"
+
+class CyberQ:
+ 
+  def write(self, request):
+    ser.open()
+    ser.write(unicode(request))
+    ser.close()
+    return self
+ 
+  def read(self, request, length = 6):
+    ser.open()
+    ser.write(unicode(request))
+    rawValue = ser.read(length)
+    ser.close
+    return rawValue
+  
+  def query(self, request):
+    ser.open()
+    ser.write(unicode(request))
+    rawValue = ser.read(6)
+    ser.close()
+    return rawValue
+
+  def process(self, rawValue):
+    value = reduce(lambda x, y: x + y, map(lambda x, y: (ord(x) & 15) * 16 ** y, rawValue[2:6], range(4)))
+    return (value + 1) / 2
+
+  def Pit1Temp(self):
+    return "A"
+ 
+  def Pit2Temp(self):
+    return "B"
+
+  def Fan1(self):
+    return "C"  
+
+  def Fan2(self):
+    return "D"
+
+  def Food1(self):
+    return "E"
+ 
+  def Food2(self):
+    return "F"
+
+  def Pit1Set(self):
+    return "H"
+
+  def Pit2Set(self):
+    return "I"
+
+  def Food1Set(self):
+    return "L"
+  
+  def Food2Set(self):
+    return "M"
+ 
+  def Timer1(self):
+    return "N"
+ 
+  def Timer2(self):
+    return "O"
+
+  def TimeoutAction1(self):
+    return "P"
+
+  def TimeoutAction2(self):
+    return "Q"
+
+  def AlarmKeyBeeps(self):
+    return "T"
+ 
+  def AlarmDeviation(self):
+    return "Y"
+
+  def getPit1Temp(self):
+    request = self.Pit1Temp() 
+    rawValue = self.query(request)
+    value = self.process(rawValue) 
+    return value 
+
+  def GetUSBValue(self, grillValue):
+    result = ''
+    result = result + chr(((grillValue & 0XF) / 1 + 48))
+    result = result + chr(((grillValue & 0XF0) / 16 + 48))
+    result = result + chr(((grillValue & 0XF00) / 256 + 48))
+    result = result + chr(((grillValue & 0XF000) / 4096 + 48))
+    result = result + "^"
+    return result
+
+  def setPit1(self, temp):
+    temp = temp * 2
+    request = "~h"
+    request = request + self.GetUSBValue(temp)
+    ser.open()
+    ser.write(unicode(request))
+    ser.close()
+
+  def setPit2(self, temp):
+    temp = temp * 2
+    request = "~i" + self.GetUSBValue(temp)
+    ser.open()
+    ser.write(unicode(request))
+    ser.close()
+
+  def setFood1(self, temp):
+    temp = temp * 2
+    request = "~l" + self.GetUSBValue(temp)
+    ser.open()
+    ser.write(unicode(request))
+    ser.close()
+
+  def setFood2(self, temp):
+    temp = temp * 2
+    request = "~m" + self.GetUSBValue(temp)
+    ser.open()
+    ser.write(unicode(request))
+    ser.close()
+
+  def test(self, command):
+    rawValue = self.query(command)
+    value = self.process(rawValue)
+    return value 
+
+USBConnection = CyberQ()
+pit1temp = USBConnection.getPit1Temp()
+time.sleep(0.5)
+pit1set = USBConnection.setPit1(80)
+time.sleep(0.5)
+USBConnection.setFood1(130)
+test = USBConnection.test("H")
+test = USBConnection.test("L")
+time.sleep(0.5)
+print pit1temp
+print test
