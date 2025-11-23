@@ -1,7 +1,7 @@
 esphome:
   name: cyberq-controller
-  platform: ESP32
-  board: esp32dev
+  platform: ESP32-S3
+  board: esp32-s3-devkitc-1
 
 wifi:
   ssid: !secret wifi_ssid
@@ -12,11 +12,23 @@ ota:
 
 logger:
 
-uart:
-  id: uart_bus
-  tx_pin: GPIO17
-  rx_pin: GPIO16
-  baud_rate: 9600
+# USB Host Interface (required for USB UART)
+usb_host:
+  id: usb_host_bus
+
+# USB Host UART Interface
+# Note: Change 'type' based on your CyberQ USB device:
+#   - cdc_acm: Generic USB CDC ACM (most common)
+#   - cp210x: Silicon Labs USB to UART Bridge
+#   - ch340: WCH USB to serial adapter
+#   - ch34x: Multi-channel USB to serial adapter
+#   - stm32_vcp: STM32 Virtual COM Port
+usb_uart:
+  - type: cdc_acm
+    channels:
+      - id: uart_bus
+        baud_rate: 9600
+        buffer_size: 256
 
 # Custom CyberQ component
 external_components:
