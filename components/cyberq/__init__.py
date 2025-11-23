@@ -16,7 +16,7 @@ CONF_CYBERQ = "cyberq"
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(CyberQComponent),
-}).extend(uart.UART_DEVICE_SCHEMA)
+}).extend(uart.UART_DEVICE_SCHEMA).extend(cv.COMPONENT_SCHEMA)
 
 def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
@@ -24,129 +24,7 @@ def to_code(config):
     yield uart.register_uart_device(var, config)
 
 
-# Sensor platform
-def validate_sensor_config(config):
-    # Ensure at least one sensor type is specified
-    sensor_types = ["pit1_temperature", "pit2_temperature", "food1_temperature", 
-                    "food2_temperature", "fan1_speed", "fan2_speed"]
-    if not any(key in config for key in sensor_types):
-        raise cv.Invalid("At least one sensor type must be specified")
-    return config
-
-SENSOR_PLATFORM_SCHEMA = cv.Schema({
-    cv.GenerateID(CONF_CYBERQ_ID): cv.use_id(CyberQComponent),
-    cv.Optional("pit1_temperature"): sensor.sensor_schema(
-        CyberQSensor,
-        unit_of_measurement="°F",
-        accuracy_decimals=1,
-    ),
-    cv.Optional("pit2_temperature"): sensor.sensor_schema(
-        CyberQSensor,
-        unit_of_measurement="°F",
-        accuracy_decimals=1,
-    ),
-    cv.Optional("food1_temperature"): sensor.sensor_schema(
-        CyberQSensor,
-        unit_of_measurement="°F",
-        accuracy_decimals=1,
-    ),
-    cv.Optional("food2_temperature"): sensor.sensor_schema(
-        CyberQSensor,
-        unit_of_measurement="°F",
-        accuracy_decimals=1,
-    ),
-    cv.Optional("fan1_speed"): sensor.sensor_schema(
-        CyberQSensor,
-        accuracy_decimals=1,
-    ),
-    cv.Optional("fan2_speed"): sensor.sensor_schema(
-        CyberQSensor,
-        accuracy_decimals=1,
-    ),
-}).add_extra(validate_sensor_config)
-
-def sensor_to_code(config):
-    parent = yield cg.get_variable(config[CONF_CYBERQ_ID])
-    
-    # Determine sensor type and get the appropriate config
-    sensor_type = ""
-    sensor_config = None
-    
-    if "pit1_temperature" in config:
-        sensor_type = "pit1_temperature"
-        sensor_config = config["pit1_temperature"]
-    elif "pit2_temperature" in config:
-        sensor_type = "pit2_temperature"
-        sensor_config = config["pit2_temperature"]
-    elif "food1_temperature" in config:
-        sensor_type = "food1_temperature"
-        sensor_config = config["food1_temperature"]
-    elif "food2_temperature" in config:
-        sensor_type = "food2_temperature"
-        sensor_config = config["food2_temperature"]
-    elif "fan1_speed" in config:
-        sensor_type = "fan1_speed"
-        sensor_config = config["fan1_speed"]
-    elif "fan2_speed" in config:
-        sensor_type = "fan2_speed"
-        sensor_config = config["fan2_speed"]
-    
-    if sensor_config:
-        sens = yield sensor.new_sensor(sensor_config)
-        cg.add(sens.set_cyberq_parent(parent))
-        cg.add(sens.set_sensor_type(sensor_type))
-
-
-# Number platform
-def validate_number_config(config):
-    # Ensure at least one number type is specified
-    number_types = ["pit1_setpoint", "pit2_setpoint", "food1_setpoint", "food2_setpoint"]
-    if not any(key in config for key in number_types):
-        raise cv.Invalid("At least one number type must be specified")
-    return config
-
-NUMBER_PLATFORM_SCHEMA = cv.Schema({
-    cv.GenerateID(CONF_CYBERQ_ID): cv.use_id(CyberQComponent),
-    cv.Optional("pit1_setpoint"): number.number_schema(
-        CyberQNumber,
-        unit_of_measurement="°F",
-    ),
-    cv.Optional("pit2_setpoint"): number.number_schema(
-        CyberQNumber,
-        unit_of_measurement="°F",
-    ),
-    cv.Optional("food1_setpoint"): number.number_schema(
-        CyberQNumber,
-        unit_of_measurement="°F",
-    ),
-    cv.Optional("food2_setpoint"): number.number_schema(
-        CyberQNumber,
-        unit_of_measurement="°F",
-    ),
-}).add_extra(validate_number_config)
-
-def number_to_code(config):
-    parent = yield cg.get_variable(config[CONF_CYBERQ_ID])
-    
-    # Determine number type and get the appropriate config
-    number_type = ""
-    number_config = None
-    
-    if "pit1_setpoint" in config:
-        number_type = "pit1_setpoint"
-        number_config = config["pit1_setpoint"]
-    elif "pit2_setpoint" in config:
-        number_type = "pit2_setpoint"
-        number_config = config["pit2_setpoint"]
-    elif "food1_setpoint" in config:
-        number_type = "food1_setpoint"
-        number_config = config["food1_setpoint"]
-    elif "food2_setpoint" in config:
-        number_type = "food2_setpoint"
-        number_config = config["food2_setpoint"]
-    
-    if number_config:
-        num = yield number.new_number(number_config)
-        cg.add(num.set_cyberq_parent(parent))
-        cg.add(num.set_number_type(number_type))
+# Platform schemas are defined in sensor.py and number.py
+# Export classes for use in platform files
+__all__ = ['cyberq_ns', 'CyberQComponent', 'CyberQSensor', 'CyberQNumber', 'CONF_CYBERQ_ID']
 
