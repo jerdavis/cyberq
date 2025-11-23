@@ -49,7 +49,7 @@ SENSOR_PLATFORM_SCHEMA = sensor.SENSOR_PLATFORM_SCHEMA.extend({
     cv.Optional("fan2_speed"): sensor.sensor_schema(
         accuracy_decimals=1,
     ),
-})
+}).add_extra(cv.requires_one_of("pit1_temperature", "pit2_temperature", "food1_temperature", "food2_temperature", "fan1_speed", "fan2_speed"))
 
 def sensor_to_code(config):
     parent = yield cg.get_variable(config[CONF_CYBERQ_ID])
@@ -98,7 +98,7 @@ NUMBER_PLATFORM_SCHEMA = number.NUMBER_PLATFORM_SCHEMA.extend({
     cv.Optional("food2_setpoint"): number.number_schema(
         unit_of_measurement="°F",
     ),
-})
+}).add_extra(cv.requires_one_of("pit1_setpoint", "pit2_setpoint", "food1_setpoint", "food2_setpoint"))
 
 def number_to_code(config):
     parent = yield cg.get_variable(config[CONF_CYBERQ_ID])
