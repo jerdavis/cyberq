@@ -1,16 +1,34 @@
 esphome:
-  name: cyberq-controller
-  platform: ESP32-S3
+  name: cyberq
+  friendly_name: cyberq
+
+esp32:
   board: esp32-s3-devkitc-1
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "KXlkTuoZv1NNQlpzNjHI81hV5uZ9Cl89mAqdNkh62Vk="
+
+ota:
+  - platform: esphome
+    password: "7d48e2be5785f9e861cd9710cbc3bfa9"
 
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
 
-api:
-ota:
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Cyberq Fallback Hotspot"
+    password: "4vZnhebFFn5n"
 
-logger:
+captive_portal:
 
 # USB Host Interface (required for USB UART)
 usb_host:
@@ -23,8 +41,11 @@ usb_host:
 #   - ch340: WCH USB to serial adapter
 #   - ch34x: Multi-channel USB to serial adapter
 #   - stm32_vcp: STM32 Virtual COM Port
+# vid and pid set to 0 to match any device (wildcard)
 usb_uart:
   - type: cdc_acm
+    vid: 0
+    pid: 0
     channels:
       - id: uart_bus
         baud_rate: 9600
